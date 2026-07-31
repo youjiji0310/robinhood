@@ -1,0 +1,18 @@
+{
+  "name": "pistachio-scribbles-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy:robinhood": "hardhat run scripts/deploy.js --network robinhood",
+    "deploy:arbitrumSepolia": "hardhat run scripts/deploy.js --network arbitrumSepolia"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.0",
+    "dotenv": "^16.4.5"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2"
+  }
+}
