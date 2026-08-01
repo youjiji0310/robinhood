@@ -4,3 +4,6 @@ dist/
 artifacts/
 cache/
 *.log
+
+.vercel
+.env*
