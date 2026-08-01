@@ -1,8 +1,9 @@
-import { useEffect, useState, useCallback } from "react";
+﻿import { useEffect, useState, useCallback } from "react";
 import { BrowserProvider, Contract, formatEther, parseEther } from "ethers";
 import "./App.css";
 import PreviewCard from "./components/PreviewCard.jsx";
 import ScribbleMark from "./components/ScribbleMark.jsx";
+import HeroDecoration from "./components/HeroDecoration.jsx";
 import CONTRACT_ABI from "./contractAbi.js";
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
@@ -23,8 +24,6 @@ export default function App() {
   const readContract = useCallback(async () => {
     try {
       const provider = wallet ? wallet.provider : new BrowserProvider(window.ethereum || undefined);
-      // Falls back to a read-only call even without a connected wallet isn't
-      // possible via BrowserProvider alone — in production, use a JsonRpcProvider(RPC_URL) here.
       const contract = new Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
       const [totalMinted, maxSupply, mintPrice, mintOpen] = await Promise.all([
         contract.totalMinted(),
@@ -39,7 +38,7 @@ export default function App() {
         mintOpen,
       });
     } catch {
-      // No wallet/provider yet, or contract not deployed — fine pre-launch.
+      // No wallet/provider yet, or contract not deployed
     }
   }, [wallet]);
 
@@ -84,13 +83,13 @@ export default function App() {
   const mint = useCallback(async () => {
     if (!wallet || !chainState.mintPrice) return;
     setLoading(true);
-    setStatus("Confirm the mint transaction in your wallet…");
+    setStatus("Confirm the mint transaction in your wallet...");
     try {
       const signer = await wallet.provider.getSigner();
       const contract = new Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
       const value = chainState.mintPrice * BigInt(quantity);
       const tx = await contract.mint(quantity, { value });
-      setStatus("Mint submitted — waiting for confirmation…");
+      setStatus("Mint submitted, waiting for confirmation...");
       const receipt = await tx.wait();
 
       const mintedEvent = receipt.logs
@@ -118,7 +117,7 @@ export default function App() {
     }
   }, [wallet, chainState.mintPrice, quantity, readContract]);
 
-  const priceLabel = chainState.mintPrice ? `${formatEther(chainState.mintPrice)} ETH` : "—";
+  const priceLabel = chainState.mintPrice ? `${formatEther(chainState.mintPrice)} ETH` : "-";
   const soldOut = chainState.totalMinted >= chainState.maxSupply;
 
   return (
@@ -128,7 +127,7 @@ export default function App() {
           <ScribbleMark seed={9001} size={28} /> Pistachio Scribbles
         </span>
         {wallet ? (
-          <span className="pill">{wallet.address.slice(0, 6)}…{wallet.address.slice(-4)}</span>
+          <span className="pill">{wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}</span>
         ) : (
           <button className="btn-solid" onClick={connectWallet}>
             Connect wallet
@@ -136,22 +135,33 @@ export default function App() {
         )}
       </header>
 
-      <main className="hero">
-        <p className="eyebrow">10,000 generative marks · {CHAIN_NAME}</p>
-        <h1>Every piece is code.<br />Not a picture of an ape.</h1>
-        <p className="lede">
-          No image files, no PFP formula. Each of the 10,000 tokens is rendered
-          live from its own token ID — jagged lines, ink blots, cross-hatching,
-          and drips, layered on a spectrum of pistachio backgrounds. The art is
-          the algorithm, and it's fully reproducible by anyone.
-        </p>
+      <section className="hero">
+        <HeroDecoration />
+        <div className="hero-inner">
+          <p className="eyebrow">10,000 generative marks - {CHAIN_NAME}</p>
+          <h1>
+            Every piece<br />is code.
+          </h1>
+          <p className="lede">
+            No image files, no PFP formula. Each of the 10,000 tokens is rendered
+            live from its own token ID: jagged lines, ink blots, cross-hatching,
+            and drips, layered on a spectrum of pistachio backgrounds.
+          </p>
+        </div>
+      </section>
 
+      <section className="gallery-section">
+        <p className="section-label">a few pulled at random</p>
         <div className="gallery">
-          {SAMPLE_IDS.map((id) => (
-            <PreviewCard key={id} tokenId={id} size={130} />
+          {SAMPLE_IDS.map((id, i) => (
+            <div className={`gallery-tile tile-${i % 4}`} key={id}>
+              <PreviewCard tokenId={id} size={150} />
+            </div>
           ))}
         </div>
+      </section>
 
+      <section className="mint-section">
         <div className="mint-panel">
           <div className="mint-stats">
             <div>
@@ -170,7 +180,7 @@ export default function App() {
 
           <div className="mint-controls">
             <div className="qty">
-              <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} disabled={loading}>−</button>
+              <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} disabled={loading}>-</button>
               <span>{quantity}</span>
               <button onClick={() => setQuantity((q) => Math.min(10, q + 1))} disabled={loading}>+</button>
             </div>
@@ -186,7 +196,7 @@ export default function App() {
                 : !chainState.mintOpen
                 ? "Mint not open yet"
                 : loading
-                ? "Minting…"
+                ? "Minting..."
                 : `Mint ${quantity}`}
             </button>
           </div>
@@ -204,10 +214,10 @@ export default function App() {
             </div>
           </div>
         )}
-      </main>
+      </section>
 
       <footer className="foot">
-        <span>{CHAIN_NAME} · ERC-721</span>
+        <span>{CHAIN_NAME} - ERC-721</span>
         <span>art generated on-demand, nothing pre-rendered</span>
       </footer>
     </div>
