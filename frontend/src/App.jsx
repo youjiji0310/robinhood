@@ -1,10 +1,11 @@
 ﻿import { useEffect, useState, useCallback } from "react";
-import { BrowserProvider, Contract, formatEther, parseEther } from "ethers";
+import { BrowserProvider, Contract, formatEther } from "ethers";
 import "./App.css";
 import PreviewCard from "./components/PreviewCard.jsx";
 import ScribbleMark from "./components/ScribbleMark.jsx";
 import HeroDecoration from "./components/HeroDecoration.jsx";
 import CONTRACT_ABI from "./contractAbi.js";
+import { generateArtwork } from "./generateArt.js";
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
 const CHAIN_ID_HEX = import.meta.env.VITE_CHAIN_ID_HEX;
@@ -12,6 +13,47 @@ const CHAIN_NAME = import.meta.env.VITE_CHAIN_NAME || "Robinhood Chain";
 const RPC_URL = import.meta.env.VITE_RPC_URL;
 
 const SAMPLE_IDS = [102, 4471, 8890, 231, 5501, 73];
+const MARQUEE_IDS = [12, 340, 981, 2200, 5555, 7777, 9001, 143];
+
+function LiveShowcase() {
+  const [id, setId] = useState(() => 1 + Math.floor(Math.random() * 10000));
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setId(1 + Math.floor(Math.random() * 10000));
+    }, 2600);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <div className="showcase">
+      <div className="showcase-frame" key={id}>
+        <PreviewCard tokenId={id} size={280} />
+      </div>
+      <p className="showcase-caption">generating live &middot; a new one every few seconds</p>
+    </div>
+  );
+}
+
+function MarqueeStrip() {
+  const items = MARQUEE_IDS.map((id) => {
+    const { attributes } = generateArtwork(id);
+    const bg = attributes.find((a) => a.trait_type === "Background").value;
+    const mark = attributes.find((a) => a.trait_type === "Mark Combination").value;
+    return `#${id} \u00b7 ${bg} \u00b7 ${mark}`;
+  });
+  const doubled = [...items, ...items];
+
+  return (
+    <div className="marquee">
+      <div className="marquee-track">
+        {doubled.map((t, i) => (
+          <span className="marquee-item" key={i}>{t}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function App() {
   const [wallet, setWallet] = useState(null);
@@ -137,18 +179,23 @@ export default function App() {
 
       <section className="hero">
         <HeroDecoration />
-        <div className="hero-inner">
-          <p className="eyebrow">10,000 generative marks - {CHAIN_NAME}</p>
-          <h1>
-            Every piece<br />is code.
-          </h1>
-          <p className="lede">
-            No image files, no PFP formula. Each of the 10,000 tokens is rendered
-            live from its own token ID: jagged lines, ink blots, cross-hatching,
-            and drips, layered on a spectrum of pistachio backgrounds.
-          </p>
+        <div className="hero-grid">
+          <div className="hero-inner">
+            <p className="eyebrow">10,000 generative marks - {CHAIN_NAME}</p>
+            <h1>
+              Every piece<br />is code.
+            </h1>
+            <p className="lede">
+              No image files, no PFP formula. Each of the 10,000 tokens is rendered
+              live from its own token ID: jagged lines, ink blots, cross-hatching,
+              and drips, layered on a spectrum of pistachio backgrounds.
+            </p>
+          </div>
+          <LiveShowcase />
         </div>
       </section>
+
+      <MarqueeStrip />
 
       <section className="gallery-section">
         <p className="section-label">a few pulled at random</p>

@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --ink: #14180f;
   --ink-raised: #1c2216;
   --line: #2e3a24;
@@ -22,6 +22,18 @@ body {
   color: var(--text-hi);
   font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
 button { font-family: var(--font-mono); cursor: pointer; }
