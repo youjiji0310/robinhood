@@ -1,4 +1,4 @@
-import express from "express";
+ï»¿import express from "express";
 import { generateArtwork } from "../../shared/generateArt.js";
 
 const router = express.Router();
@@ -10,11 +10,6 @@ function publicBaseUrl(req) {
   return `${proto}://${req.get("host")}`;
 }
 
-/// ERC-721 tokenURI() target. Regenerates the artwork live from the shared
-/// deterministic generator — nothing is pre-rendered or stored anywhere.
-/// The image field is a real HTTPS URL (not a base64 data URI) because
-/// marketplaces like OpenSea reliably fetch/cache a URL but often fail to
-/// render inline data URIs.
 router.get("/metadata/:tokenId", (req, res) => {
   const tokenId = Number(req.params.tokenId);
   if (!Number.isInteger(tokenId) || tokenId < 1 || tokenId > MAX_SUPPLY) {
@@ -25,14 +20,12 @@ router.get("/metadata/:tokenId", (req, res) => {
 
   res.json({
     name: `${COLLECTION_NAME} #${tokenId}`,
-    description: `A one-of-10,000 procedurally generated piece from ${COLLECTION_NAME}. Every trait, color, and mark is rendered directly from code — no image files, fully reproducible from the token ID.`,
+    description: `A one-of-10,000 procedurally generated piece from ${COLLECTION_NAME}. Every trait, color, and mark is rendered directly from code, no image files, fully reproducible from the token ID.`,
     image: `${publicBaseUrl(req)}/api/image/${tokenId}`,
     attributes,
   });
 });
 
-/// Serves the artwork as a real SVG file (Content-Type: image/svg+xml),
-/// generated live from the same deterministic generator.
 router.get("/image/:tokenId", (req, res) => {
   const tokenId = Number(req.params.tokenId);
   if (!Number.isInteger(tokenId) || tokenId < 1 || tokenId > MAX_SUPPLY) {
@@ -44,7 +37,6 @@ router.get("/image/:tokenId", (req, res) => {
   res.send(svg);
 });
 
-/// Lets the frontend preview any tokenId before/without minting.
 router.get("/preview/:tokenId", (req, res) => {
   const tokenId = Number(req.params.tokenId);
   if (!Number.isInteger(tokenId) || tokenId < 1 || tokenId > MAX_SUPPLY) {
