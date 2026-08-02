@@ -1,14 +1,12 @@
 ﻿:root {
-  --ink: #14180f;
-  --ink-raised: #1c2216;
-  --line: #2e3a24;
-  --paper: #f3efdc;
-  --pistachio: #b7cf8e;
-  --pistachio-deep: #93b96e;
-  --mark: #2e2a24;
-  --rust: #8a4a2b;
-  --text-hi: #f2f1e6;
-  --text-lo: #8a9a7c;
+  --paper: #f6f4ec;
+  --paper-raised: #ffffff;
+  --ink: #1a1a17;
+  --ink-soft: #55534a;
+  --line: #dedad0;
+  --line-strong: #1a1a17;
+  --pistachio: #5c7a44;
+  --pistachio-deep: #46602f;
 
   --font-display: "Fraunces", Georgia, serif;
   --font-mono: "IBM Plex Mono", "SF Mono", monospace;
@@ -18,22 +16,10 @@
 html, body, #root { height: 100%; margin: 0; }
 
 body {
-  background: var(--ink);
-  color: var(--text-hi);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;
-  position: relative;
-}
-
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 999;
-  opacity: 0.05;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
 button { font-family: var(--font-mono); cursor: pointer; }

@@ -3,7 +3,6 @@ import { BrowserProvider, Contract, formatEther } from "ethers";
 import "./App.css";
 import PreviewCard from "./components/PreviewCard.jsx";
 import ScribbleMark from "./components/ScribbleMark.jsx";
-import HeroDecoration from "./components/HeroDecoration.jsx";
 import CONTRACT_ABI from "./contractAbi.js";
 import { generateArtwork } from "./generateArt.js";
 
@@ -12,7 +11,7 @@ const CHAIN_ID_HEX = import.meta.env.VITE_CHAIN_ID_HEX;
 const CHAIN_NAME = import.meta.env.VITE_CHAIN_NAME || "Robinhood Chain";
 const RPC_URL = import.meta.env.VITE_RPC_URL;
 
-const SAMPLE_IDS = [102, 4471, 8890, 231, 5501, 73];
+const SAMPLE_IDS = [102, 4471, 8890, 231, 5501, 73, 9999, 1200];
 const MARQUEE_IDS = [12, 340, 981, 2200, 5555, 7777, 9001, 143];
 
 function LiveShowcase() {
@@ -21,16 +20,16 @@ function LiveShowcase() {
   useEffect(() => {
     const t = setInterval(() => {
       setId(1 + Math.floor(Math.random() * 10000));
-    }, 2600);
+    }, 3200);
     return () => clearInterval(t);
   }, []);
 
   return (
     <div className="showcase">
-      <div className="showcase-frame" key={id}>
-        <PreviewCard tokenId={id} size={280} />
+      <div className="showcase-frame">
+        <PreviewCard tokenId={id} size={320} />
       </div>
-      <p className="showcase-caption">generating live &middot; a new one every few seconds</p>
+      <p className="showcase-caption">rendered live, token #{id}</p>
     </div>
   );
 }
@@ -166,7 +165,7 @@ export default function App() {
     <div className="page">
       <header className="topbar">
         <span className="wordmark">
-          <ScribbleMark seed={9001} size={28} /> Pistachio Scribbles
+          <ScribbleMark seed={9001} size={22} /> Pistachio Scribbles
         </span>
         {wallet ? (
           <span className="pill">{wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}</span>
@@ -178,17 +177,14 @@ export default function App() {
       </header>
 
       <section className="hero">
-        <HeroDecoration />
         <div className="hero-grid">
           <div className="hero-inner">
-            <p className="eyebrow">10,000 generative marks - {CHAIN_NAME}</p>
-            <h1>
-              Every piece<br />is code.
-            </h1>
+            <p className="eyebrow">10,000 pieces &middot; {CHAIN_NAME}</p>
+            <h1>Every piece is code.</h1>
             <p className="lede">
-              No image files, no PFP formula. Each of the 10,000 tokens is rendered
-              live from its own token ID: jagged lines, ink blots, cross-hatching,
-              and drips, layered on a spectrum of pistachio backgrounds.
+              No image files, no PFP formula. Each token renders live from its
+              own ID: jagged lines, ink blots, cross-hatching, and drips, on a
+              spectrum of pistachio backgrounds.
             </p>
           </div>
           <LiveShowcase />
@@ -200,8 +196,8 @@ export default function App() {
       <section className="gallery-section">
         <p className="section-label">a few pulled at random</p>
         <div className="gallery">
-          {SAMPLE_IDS.map((id, i) => (
-            <div className={`gallery-tile tile-${i % 4}`} key={id}>
+          {SAMPLE_IDS.map((id) => (
+            <div className="gallery-tile" key={id}>
               <PreviewCard tokenId={id} size={150} />
             </div>
           ))}
@@ -256,7 +252,9 @@ export default function App() {
             <p className="section-label">Your pieces</p>
             <div className="gallery">
               {myTokenIds.map((id) => (
-                <PreviewCard key={id} tokenId={id} size={130} showTraits />
+                <div className="gallery-tile" key={id}>
+                  <PreviewCard tokenId={id} size={150} showTraits />
+                </div>
               ))}
             </div>
           </div>
