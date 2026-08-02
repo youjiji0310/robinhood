@@ -1,12 +1,12 @@
 ﻿:root {
-  --paper: #f6f4ec;
-  --paper-raised: #ffffff;
-  --ink: #1a1a17;
-  --ink-soft: #55534a;
-  --line: #dedad0;
-  --line-strong: #1a1a17;
-  --pistachio: #5c7a44;
-  --pistachio-deep: #46602f;
+  --ink: #120f0a;
+  --ink-raised: #1a1610;
+  --line: #332c1c;
+  --cream: #f2ecd8;
+  --stone: #6b6650;
+  --pistachio: #93b96e;
+  --gold: #d4b26a;
+  --gold-dim: #a68a4a;
 
   --font-display: "Fraunces", Georgia, serif;
   --font-mono: "IBM Plex Mono", "SF Mono", monospace;
@@ -16,8 +16,8 @@
 html, body, #root { height: 100%; margin: 0; }
 
 body {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--cream);
   font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;
 }
@@ -26,7 +26,7 @@ button { font-family: var(--font-mono); cursor: pointer; }
 
 button:focus-visible,
 input:focus-visible {
-  outline: 2px solid var(--pistachio);
+  outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
 
