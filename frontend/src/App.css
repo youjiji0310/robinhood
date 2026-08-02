@@ -90,11 +90,11 @@ h1 {
 }
 
 .gallery {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px;
+  display: flex; flex-wrap: wrap; gap: 1px;
   background: var(--line); border: 1px solid var(--line);
 }
 
-.gallery-tile { background: var(--ink-raised); }
+.gallery-tile { background: var(--ink-raised); flex: 0 1 130px; }
 
 .preview-card {
   background: var(--ink-raised); border: none;
