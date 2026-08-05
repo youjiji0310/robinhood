@@ -3,14 +3,42 @@ import { BrowserProvider, Contract, formatEther } from "ethers";
 import "./App.css";
 import PreviewCard from "./components/PreviewCard.jsx";
 import ScribbleMark from "./components/ScribbleMark.jsx";
+import GoldFX from "./components/GoldFX.jsx";
+import MintGame from "./components/MintGame.jsx";
 import CONTRACT_ABI from "./contractAbi.js";
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
 const CHAIN_ID_HEX = import.meta.env.VITE_CHAIN_ID_HEX;
 const CHAIN_NAME = import.meta.env.VITE_CHAIN_NAME || "Robinhood Chain";
 const RPC_URL = import.meta.env.VITE_RPC_URL;
+const OPENSEA_URL = import.meta.env.VITE_OPENSEA_URL || "#";
+const DISCORD_URL = import.meta.env.VITE_DISCORD_URL || "#";
+const TWITTER_URL = import.meta.env.VITE_TWITTER_URL || "#";
 
-const SAMPLE_IDS = [102, 4471, 8890, 231, 5501, 73, 9999, 1200];
+const DEFAULT_SAMPLE_IDS = [102, 4471, 8890, 231, 5501, 73, 9999, 1200];
+
+const ROADMAP = [
+  { phase: "PHASE 1", title: "Mint live", text: "All 10,000 pieces open for minting on Robinhood Chain. No presale, no allowlist, first come, first served." },
+  { phase: "PHASE 2", title: "Marketplace integration", text: "Full metadata and image support across OpenSea and every Robinhood Chain explorer, so every piece renders correctly wherever it's viewed." },
+  { phase: "PHASE 3", title: "What's next", text: "Holder perks and future generative drops, decided together with whoever ends up holding the collection." },
+];
+
+const FAQS = [
+  { q: "What is Pistachio Scribbles?", a: "A collection of 10,000 pieces where every trait is rendered live from code, no pre-made image files, ever." },
+  { q: "How is rarity decided?", a: "Background shade, mark combination, ink color, and intensity are each drawn from weighted tables, the same way any generative collection works, just transparently, in open code." },
+  { q: "What chain is this on?", a: `${CHAIN_NAME}, an Arbitrum-based Ethereum layer 2.` },
+  { q: "Can I see the code?", a: "Yes. The generator is a small, readable script, every piece is fully reproducible from its token ID alone, by anyone." },
+  { q: "Is there a limit per wallet?", a: "Yes, minting is capped per wallet to keep distribution fair." },
+];
+
+function useShuffledIds(seedList, count = 8) {
+  const [ids, setIds] = useState(seedList);
+  const shuffle = useCallback(() => {
+    const next = Array.from({ length: count }, () => 1 + Math.floor(Math.random() * 10000));
+    setIds(next);
+  }, [count]);
+  return [ids, shuffle];
+}
 
 function LiveShowcase() {
   const [id, setId] = useState(() => 1 + Math.floor(Math.random() * 10000));
@@ -42,6 +70,9 @@ export default function App() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [myTokenIds, setMyTokenIds] = useState([]);
+  const [sampleIds, shuffleSamples] = useShuffledIds(DEFAULT_SAMPLE_IDS);
+  const [openFaq, setOpenFaq] = useState(null);
+  const [gameWon, setGameWon] = useState(false);
 
   const readContract = useCallback(async () => {
     try {
@@ -142,12 +173,22 @@ export default function App() {
   const priceLabel = chainState.mintPrice ? `${formatEther(chainState.mintPrice)} ETH` : "-";
   const soldOut = chainState.totalMinted >= chainState.maxSupply;
 
+  const scrollToMint = () => document.getElementById("mint")?.scrollIntoView({ behavior: "smooth" });
+
   return (
     <div className="page">
+      <GoldFX />
+
       <header className="topbar">
         <span className="wordmark">
           <ScribbleMark seed={9001} size={20} /> PISTACHIO SCRIBBLES
         </span>
+        <nav className="nav-links">
+          <a href="#collection">Collection</a>
+          <a href="#roadmap">Roadmap</a>
+          <a href="#faq">FAQ</a>
+          <a href={OPENSEA_URL} target="_blank" rel="noreferrer" className="nav-link-strong">OPENSEA</a>
+        </nav>
         {wallet ? (
           <span className="pill">{wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}</span>
         ) : (
@@ -158,31 +199,75 @@ export default function App() {
       </header>
 
       <section className="hero">
-        <p className="eyebrow">A COLLECTION OF TEN THOUSAND</p>
-        <h1>Every mark, rendered by an algorithm</h1>
-        <p className="lede">NO. {String(myTokenIds[0] || 1).padStart(4, "0")} / 10,000 &middot; NO TWO ALIKE</p>
-        <LiveShowcase />
-      </section>
+        <p className="eyebrow">MINTED &middot; {chainState.totalMinted.toLocaleString()} OF 10,000 PIECES</p>
+        <h1>Welcome to<br />the canvas</h1>
+        <p className="lede">
+          10,000 pieces rendered live from an algorithm, minted on {CHAIN_NAME}.
+          No image files. No PFP formula. No two ever alike.
+        </p>
+        <button className="btn-solid btn-hero" onClick={scrollToMint}>MINT NOW</button>
 
-      <div className="marquee">
-        <div className="mint-stats">
-          <div>
-            <dt>MINTED</dt>
-            <dd>{chainState.totalMinted.toLocaleString()} / {chainState.maxSupply.toLocaleString()}</dd>
+        <LiveShowcase />
+
+        <div className="stat-cards">
+          <div className="stat-card">
+            <p className="stat-value">10,000</p>
+            <p className="stat-label">Supply</p>
           </div>
-          <div>
-            <dt>PRICE</dt>
-            <dd>{priceLabel}</dd>
+          <div className="stat-card">
+            <p className="stat-value">LIVE</p>
+            <p className="stat-label">Mint status</p>
           </div>
-          <div>
-            <dt>CHAIN</dt>
-            <dd>Robinhood</dd>
+          <div className="stat-card">
+            <p className="stat-value">20+</p>
+            <p className="stat-label">Traits</p>
+          </div>
+          <div className="stat-card">
+            <p className="stat-value">Robinhood</p>
+            <p className="stat-label">Chain</p>
           </div>
         </div>
-      </div>
+      </section>
 
-      <section className="mint-section">
-        <div className="mint-panel">
+      <section className="collection-section" id="collection">
+        <p className="kicker">// THE COLLECTION</p>
+        <p className="section-label">Meet the marks</p>
+        <p className="section-sub">
+          Every piece is generated from a handful of trait families: backgrounds,
+          mark styles, ink colors, and intensities, combined by a seeded algorithm.
+        </p>
+
+        <div className="gallery">
+          {sampleIds.map((id) => (
+            <div className="gallery-tile" key={id}>
+              <PreviewCard tokenId={id} size={140} />
+            </div>
+          ))}
+        </div>
+
+        <button className="btn-ghost" onClick={shuffleSamples}>SHUFFLE THE COLLECTION</button>
+      </section>
+
+      <section className="mint-section" id="mint">
+        {!gameWon ? (
+          <MintGame onWin={() => setGameWon(true)} />
+        ) : (
+          <div className="mint-panel">
+          <div className="mint-stats">
+            <div>
+              <dt>MINTED</dt>
+              <dd>{chainState.totalMinted.toLocaleString()} / {chainState.maxSupply.toLocaleString()}</dd>
+            </div>
+            <div>
+              <dt>PRICE</dt>
+              <dd>{priceLabel}</dd>
+            </div>
+            <div>
+              <dt>CHAIN</dt>
+              <dd>Robinhood</dd>
+            </div>
+          </div>
+
           <div className="mint-controls">
             <div className="qty">
               <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} disabled={loading}>-</button>
@@ -207,22 +292,12 @@ export default function App() {
           </div>
 
           {status && <p className="status">{status}</p>}
-        </div>
-      </section>
-
-      <section className="gallery-section">
-        <p className="section-label">A FEW PULLED AT RANDOM</p>
-        <div className="gallery">
-          {SAMPLE_IDS.map((id) => (
-            <div className="gallery-tile" key={id}>
-              <PreviewCard tokenId={id} size={140} />
-            </div>
-          ))}
-        </div>
+          </div>
+        )}
 
         {myTokenIds.length > 0 && (
-          <div className="my-mints" style={{ marginTop: "56px" }}>
-            <p className="section-label">YOUR PIECES</p>
+          <div className="my-mints">
+            <p className="section-label" style={{ fontSize: "13px" }}>Your pieces</p>
             <div className="gallery">
               {myTokenIds.map((id) => (
                 <div className="gallery-tile" key={id}>
@@ -232,6 +307,46 @@ export default function App() {
             </div>
           </div>
         )}
+      </section>
+
+      <section className="roadmap-section" id="roadmap">
+        <p className="kicker">// THE PLAN</p>
+        <p className="section-label">Roadmap</p>
+        <div className="roadmap-grid">
+          {ROADMAP.map((r) => (
+            <div className="roadmap-card" key={r.phase}>
+              <p className="roadmap-phase">{r.phase}</p>
+              <p className="roadmap-title">{r.title}</p>
+              <p className="roadmap-text">{r.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="faq-section" id="faq">
+        <p className="kicker">// FAQ</p>
+        <p className="section-label">Questions</p>
+        <div className="faq-list">
+          {FAQS.map((f, i) => (
+            <div className="faq-item" key={f.q}>
+              <button className="faq-question" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                <span>{f.q}</span>
+                <span>{openFaq === i ? "-" : "+"}</span>
+              </button>
+              {openFaq === i && <p className="faq-answer">{f.a}</p>}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="join-section">
+        <p className="section-label">Join the collection</p>
+        <p className="section-sub">10,000 pieces, minted and live. Follow along for whatever comes next.</p>
+        <div className="social-links">
+          <a href={DISCORD_URL} target="_blank" rel="noreferrer" className="btn-ghost">DISCORD</a>
+          <a href={TWITTER_URL} target="_blank" rel="noreferrer" className="btn-ghost">TWITTER</a>
+          <a href={OPENSEA_URL} target="_blank" rel="noreferrer" className="btn-ghost">OPENSEA</a>
+        </div>
       </section>
 
       <footer className="foot">
